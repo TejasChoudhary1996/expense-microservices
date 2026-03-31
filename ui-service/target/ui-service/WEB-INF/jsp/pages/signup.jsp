@@ -1,0 +1,71 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Signup</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #0f172a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: white;
+        }
+        .card {
+            background: #1e293b;
+            padding: 30px;
+            border-radius: 10px;
+            width: 300px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: none;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #22c55e;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        a {
+            color: #3b82f6;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Signup</h2>
+
+<c:if test="${not empty sessionScope.loginPageMsg}">
+    <div class="alert error">
+        ${sessionScope.loginPageMsg}
+    </div>
+    <c:remove var="loginPageMsg" scope="session"/>
+</c:if>
+
+<form action="/signup" method="post">
+    <input name="username" placeholder="Username" required/>
+    <input name="password" type="password" placeholder="Password" required/>
+    <input name="email" placeholder="email" required/>
+    <input name="mobileNo" placeholder="Mobile Number" required/>
+    <button type="submit">Create Account</button>
+</form>
+
+<p>Already have an account? <a href="/login">Login</a></p>
+
+
+</div>
+
+</body>
+</html>

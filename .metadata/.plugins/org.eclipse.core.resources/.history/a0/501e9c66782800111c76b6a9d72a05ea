@@ -1,0 +1,85 @@
+
+package com.example.uiservice.controller;
+
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+
+import jakarta.servlet.http.HttpSession;
+
+import java.util.*;
+
+@Controller
+public class UIController {
+
+  private final String URL = "http://localhost:8081/expenses";
+
+  @GetMapping("/")
+  public String home(Model model, HttpSession session) {
+
+      String token = (String) session.getAttribute("token");
+
+      RestTemplate rt = new RestTemplate();
+
+      HttpHeaders headers = new HttpHeaders();
+      headers.set("Authorization", "Bearer " + token);
+
+      HttpEntity<String> entity = new HttpEntity<>(headers);
+
+      ResponseEntity<List> response =
+          rt.exchange("http://localhost:8081/expenses",
+                      HttpMethod.GET,
+                      entity,
+                      List.class);
+
+      model.addAttribute("expenses", response.getBody());
+
+      return "home";
+  }
+
+  @PostMapping("/save")
+  public String save(@RequestParam Double amount,
+                     @RequestParam String description,
+                     HttpSession session) {
+
+      String token = (String) session.getAttribute("token");
+
+      RestTemplate rt = new RestTemplate();
+
+      HttpHeaders headers = new HttpHeaders();
+      headers.set("Authorization", "Bearer " + token);
+
+      Map<String, Object> req = new HashMap<>();
+      req.put("amount", amount);
+      req.put("description", description);
+
+      HttpEntity<Map<String, Object>> entity = new HttpEntity<>(req, headers);
+
+      rt.postForObject("http://localhost:8081/expenses", entity, String.class);
+
+      return "redirect:/";
+  }
+  
+  @PostMapping("/login")
+  public String login(@RequestParam String email,
+                      @RequestParam String password,
+                      HttpSession session) {
+
+      RestTemplate rt = new RestTemplate();
+
+      Map<String, String> req = new HashMap<>();
+      req.put("email", email);
+      req.put("password", password);
+
+      Map response = rt.postForObject("http://localhost:8082/auth/login", req, Map.class);
+
+      String token = (String) response.get("token");
+
+      session.setAttribute("token", token);
+
+      return "redirect:/";
+  }
+}

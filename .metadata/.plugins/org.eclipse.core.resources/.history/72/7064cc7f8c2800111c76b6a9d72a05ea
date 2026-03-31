@@ -1,0 +1,188 @@
+<%@ taglib prefix="c" uri="jakarta.tags.core"%>
+<!DOCTYPE html>
+<html>
+<head>
+<title>Expense Tracker</title>
+
+<!-- Bootstrap -->
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+
+<!-- Font -->
+<link
+	href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap"
+	rel="stylesheet">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body {
+	font-family: 'Poppins', sans-serif;
+	background: linear-gradient(135deg, #1e3c72, #2a5298);
+	min-height: 100vh;
+}
+
+.glass-card {
+	background: rgba(255, 255, 255, 0.15);
+	border-radius: 15px;
+	backdrop-filter: blur(10px);
+	padding: 20px;
+	color: white;
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.form-control, .form-select {
+	border-radius: 10px;
+}
+
+.btn-primary {
+	border-radius: 10px;
+	background: #ff7a18;
+	border: none;
+}
+
+.btn-primary:hover {
+	background: #ff5e00;
+}
+
+table {
+	color: white;
+}
+
+.table thead {
+	background: rgba(0, 0, 0, 0.4);
+}
+
+.table tbody tr:hover {
+	background: rgba(255, 255, 255, 0.1);
+}
+
+.total-box {
+	background: rgba(0, 0, 0, 0.4);
+	padding: 10px 15px;
+	border-radius: 10px;
+	font-weight: 500;
+}
+</style>
+</head>
+
+<body>
+
+	<div class="container py-5">
+
+		<!-- Header -->
+		<div class="text-center text-white mb-4">
+			<h1>💸 Expense Tracker</h1>
+			<p class="opacity-75">Track your spending smartly</p>
+		</div>
+
+		<!-- Form -->
+		<div class="glass-card mb-4">
+			<form action="save" method="post" class="row g-3">
+
+				<div class="col-md-3">
+					<label class="form-label">Amount</label> <input type="number"
+						step="0.01" name="amount" class="form-control" required>
+				</div>
+
+				<div class="col-md-3">
+					<label class="form-label">Description</label> <input type="text"
+						name="description" class="form-control" required>
+				</div>
+
+				<div class="col-md-2">
+					<label class="form-label">Date</label> <input type="date"
+						name="date" class="form-control" required>
+				</div>
+
+				<div class="col-md-2">
+					<label class="form-label">Category</label> <select name="category"
+						class="form-select">
+						<c:forEach var="c" items="${categories}">
+							<option>${c.name}</option>
+						</c:forEach>
+					</select>
+
+					<form action="addCategory" method="post" class="mt-2 d-flex">
+						<input type="text" name="name" placeholder="New"
+							class="form-control me-1" />
+						<button class="btn btn-sm btn-light">+</button>
+					</form>
+				</div>
+
+				<div class="col-md-2">
+					<label class="form-label">Payment</label> <select
+						name="paymentMethod" class="form-select">
+						<c:forEach var="p" items="${payments}">
+							<option>${p.name}</option>
+						</c:forEach>
+					</select>
+
+					<form action="addPayment" method="post" class="mt-2 d-flex">
+						<input type="text" name="name" placeholder="New"
+							class="form-control me-1" />
+						<button class="btn btn-sm btn-light">+</button>
+					</form>
+				</div>
+
+				<div class="col-12 d-grid">
+					<button type="submit" class="btn btn-primary">Add Expense</button>
+				</div>
+
+			</form>
+		</div>
+
+		<!-- Expense Table -->
+		<div class="glass-card">
+
+			<div class="d-flex justify-content-between align-items-center mb-3">
+				<h5>All Expenses</h5>
+
+				<!-- Total -->
+				<div class="total-box">
+					Total: ₹
+					<c:set var="total" value="0" />
+					<c:forEach var="e" items="${expenses}">
+						<c:set var="total" value="${total + e.amount}" />
+					</c:forEach>
+					${total}
+				</div>
+			</div>
+
+			<div class="table-responsive">
+				<table class="table align-middle">
+
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Amount</th>
+							<th>Description</th>
+							<th>Date</th>
+							<th>Category</th>
+							<th>Payment</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						<c:forEach var="e" items="${expenses}">
+							<tr>
+								<td>${e.id}</td>
+								<td>₹ ${e.amount}</td>
+								<td>${e.description}</td>
+								<td>${e.date}</td>
+								<td>${e.category}</td>
+								<td>${e.paymentMethod}</td>
+							</tr>
+						</c:forEach>
+					</tbody>
+
+				</table>
+			</div>
+
+		</div>
+
+	</div>
+
+</body>
+</html>

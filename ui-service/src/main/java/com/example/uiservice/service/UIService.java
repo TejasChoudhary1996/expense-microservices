@@ -1,0 +1,24 @@
+package com.example.uiservice.service;
+
+import java.util.Base64;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class UIService {
+	public Long extractUserIdFromToken(String token) {
+	    try {
+	        String[] parts = token.split("\\.");
+	        String payload = new String(Base64.getDecoder().decode(parts[1]));
+
+	        // simple parsing (since JSON is small)
+	        if (payload.contains("userId")) {
+	            String userIdStr = payload.split("\"userId\":")[1].split(",|}")[0];
+	            return Long.parseLong(userIdStr.trim());
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return null;
+	}
+}

@@ -1,0 +1,72 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="../layout/header.jsp" %>
+<%@ include file="../layout/sidebar.jsp" %>
+<script>
+document.querySelectorAll(".filter").forEach(input => {
+    input.addEventListener("keyup", function () {
+        let filters = document.querySelectorAll(".filter");
+        let rows = document.querySelectorAll("tbody tr");
+
+        rows.forEach(row => {
+            let show = true;
+
+            filters.forEach((filter, index) => {
+                let val = filter.value.toLowerCase();
+                let cell = row.cells[index].innerText.toLowerCase();
+
+                if (val && !cell.includes(val)) {
+                    show = false;
+                }
+            });
+
+            row.style.display = show ? "" : "none";
+        });
+    });
+});
+</script>
+<div class="content">
+
+<h3>All Expenses</h3>
+
+<div class="card-box">
+<table class="table">
+<thead>
+<tr>
+<th>ID</th>
+<th>Amount</th>
+<th>Description</th>
+<th>Date</th>
+<th>Category</th>
+<th>Payment Method</th>
+</tr>
+
+<!-- FILTER ROW -->
+<tr>
+<th><input type="text" class="form-control filter" data-col="0" placeholder="ID"></th>
+<th><input type="text" class="form-control filter" data-col="1" placeholder="Amount"></th>
+<th><input type="text" class="form-control filter" data-col="2" placeholder="Description"></th>
+<th><input type="text" class="form-control filter" data-col="3" placeholder="Date"></th>
+<th><input type="text" class="form-control filter" data-col="4" placeholder="Category"></th>
+<th><input type="text" class="form-control filter" data-col="5" placeholder="Payment"></th>
+</tr>
+</thead>
+
+<tbody>
+<c:forEach var="e" items="${expenses}">
+<tr>
+<td>${e.id}</td>
+<td>&#8377; ${e.amount}</td>
+<td>${e.description}</td>
+<td>${e.date}</td>
+<td>${e.category}</td>
+<td>${e.paymentMethod}</td>
+</tr>
+</c:forEach>
+</tbody>
+</table>
+</div>
+
+</div>
+
+</body>
+</html>

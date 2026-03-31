@@ -1,0 +1,6 @@
+package snippet;
+
+public class Snippet {
+	public String save(@RequestParam Double amount, @RequestParam String description,@RequestParam Date date,@RequestParam String category,@RequestParam String paymentMethod) {
+}
+

@@ -1,0 +1,9 @@
+package com.example.expenseservice.entity;
+
+@Entity
+public class PaymentMethod {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String name;
+}

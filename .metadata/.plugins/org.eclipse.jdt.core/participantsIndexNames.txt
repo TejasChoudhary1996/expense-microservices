@@ -1,0 +1,13 @@
+INDEX VERSION 1.134
+C:\Coding\projects\expense_microservices\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\1071257406.index
+\ui-service\src\main\java
+C:\Coding\projects\expense_microservices\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\1410913506.index
+\ui-service\src\main\java
+C:\Coding\projects\expense_microservices\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\3033671713.index
+\ui-service\src\main\java
+C:\Coding\projects\expense_microservices\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\3721265981.index
+\ui-service\src\main\java
+C:\Coding\projects\expense_microservices\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\1630304746.index
+\ui-service\src\main\java
+C:\Coding\projects\expense_microservices\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\3227462322.index
+\ui-service\src\main\java

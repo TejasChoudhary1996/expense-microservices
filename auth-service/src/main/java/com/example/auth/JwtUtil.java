@@ -1,0 +1,40 @@
+package com.example.auth;
+
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
+
+import java.security.Key;
+import java.util.Date;
+
+public class JwtUtil {
+
+    private static final String SECRET =
+            "mysecretkeymysecretkeymysecretkey";
+
+    private static final Key key =
+            Keys.hmacShaKeyFor(SECRET.getBytes());
+
+    private static final long EXPIRATION = 1000 * 60 * 60; // 1 hour
+
+    public static String generateToken(Long userId, String username) {
+    	System.out.println("Generating token for userId: " + userId + ", username: " + username);
+        return Jwts.builder()
+                .setSubject(username)
+                .claim("userId", userId)   // 🔥 THIS IS MISSING
+                .setIssuedAt(new Date())
+                .signWith(key)
+                .compact();
+    }
+
+    public static Claims validateToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    public static Long extractUserId(String token) {
+        return validateToken(token).get("userId", Long.class);
+    }
+}

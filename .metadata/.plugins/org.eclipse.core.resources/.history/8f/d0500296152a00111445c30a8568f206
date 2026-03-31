@@ -1,0 +1,37 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="../layout/header.jsp" %>
+<%@ include file="../layout/sidebar.jsp" %>
+
+<div class="content">
+
+<h3>All Expenses</h3>
+
+<div class="card-box">
+<table class="table">
+<tr>
+<th>ID</th>
+<th>Amount</th>
+<th>Description</th>
+<th>Date</th>
+<th>Category</th>
+<th>Payment Method</th>
+</tr>
+
+<c:forEach var="e" items="${expenses}">
+<tr>
+<td>${e.id}</td>
+<td>&#8377; ${e.amount}</td>
+<td>${e.description}</td>
+<td>${e.date}</td>
+<td>${e.category}</td>
+<td>${e.paymentMethod}</td>
+</tr>
+</c:forEach>
+
+</table>
+</div>
+
+</div>
+
+</body>
+</html>

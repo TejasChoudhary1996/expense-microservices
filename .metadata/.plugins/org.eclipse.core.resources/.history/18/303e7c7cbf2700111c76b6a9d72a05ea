@@ -1,0 +1,5 @@
+package com.example.expenseservice.security;
+
+public class SecurityConfig {
+
+}

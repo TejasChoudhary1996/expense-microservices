@@ -1,0 +1,10 @@
+com\example\expenseservice\entity\Category.class
+com\example\expenseservice\entity\Expense.class
+com\example\expenseservice\repository\CategoryRepository.class
+com\example\expenseservice\entity\PaymentMethod.class
+com\example\expenseservice\repository\ExpenseRepository.class
+com\example\expenseservice\service\ExpenseService.class
+com\example\expenseservice\ExpenseServiceApplication.class
+com\example\expenseservice\repository\PaymentMethodRepository.class
+com\example\expenseservice\controller\MetaController.class
+com\example\expenseservice\controller\ExpenseController.class

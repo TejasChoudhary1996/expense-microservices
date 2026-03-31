@@ -1,0 +1,32 @@
+package com.example.expenseservice.security;
+
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.stereotype.Component;
+
+import java.security.Key;
+
+@Component
+public class JwtUtil {
+
+    private final String SECRET = "mysecretkeymysecretkeymysecretkey12345";
+    private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
+
+    public String extractEmail(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+    }
+
+    public boolean isValid(String token) {
+        try {
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+}

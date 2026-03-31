@@ -1,0 +1,21 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+
+<div class="sidebar" id="sidebar">
+
+
+
+    <button onclick="toggleSidebar()" class="btn btn-light mb-3">☰</button>
+
+  <a href="/" class="menu-item ${page == 'dashboard' ? 'active' : ''}">
+        📋 <span>Dashboard</span>
+    </a>
+
+    <a href="/expenses" class="menu-item ${page == 'expenses' ? 'active' : ''}">
+        📄 <span>Expenses</span>
+    </a>
+
+    <a href="/analytics" class="menu-item ${page == 'analytics' ? 'active' : ''}">
+        📊 <span>Analytics</span>
+    </a>
+
+</div>

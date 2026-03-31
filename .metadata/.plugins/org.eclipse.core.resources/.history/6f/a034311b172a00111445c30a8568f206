@@ -1,0 +1,83 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="../layout/header.jsp" %>
+<%@ include file="../layout/sidebar.jsp" %>
+
+<div class="content">
+
+<h3>All Expenses</h3>
+
+<div class="card-box">
+<table class="table" id="expenseTable">
+
+<thead>
+<tr>
+<th>ID</th>
+<th>Amount</th>
+<th>Description</th>
+<th>Date</th>
+<th>Category</th>
+<th>Payment Method</th>
+</tr>
+
+<!-- FILTER ROW -->
+<tr>
+<th><input type="text" class="form-control filter" placeholder="ID"></th>
+<th><input type="text" class="form-control filter" placeholder="Amount"></th>
+<th><input type="text" class="form-control filter" placeholder="Description"></th>
+<th><input type="text" class="form-control filter" placeholder="Date"></th>
+<th><input type="text" class="form-control filter" placeholder="Category"></th>
+<th><input type="text" class="form-control filter" placeholder="Payment"></th>
+</tr>
+</thead>
+
+<tbody>
+<c:forEach var="e" items="${expenses}">
+<tr>
+<td>${e.id}</td>
+<td>${e.amount}</td> <!-- removed ₹ for better filtering -->
+<td>${e.description}</td>
+<td>${e.date}</td>
+<td>${e.category}</td>
+<td>${e.paymentMethod}</td>
+</tr>
+</c:forEach>
+</tbody>
+
+</table>
+</div>
+
+</div>
+
+<!-- ✅ FIXED SCRIPT -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const filters = document.querySelectorAll(".filter");
+    const rows = document.querySelectorAll("#expenseTable tbody tr");
+
+    filters.forEach((input, colIndex) => {
+        input.addEventListener("keyup", function () {
+
+            rows.forEach(row => {
+                let show = true;
+
+                filters.forEach((f, i) => {
+                    let val = f.value.toLowerCase();
+                    let cellText = row.cells[i].innerText.toLowerCase();
+
+                    if (val && !cellText.includes(val)) {
+                        show = false;
+                    }
+                });
+
+                row.style.display = show ? "" : "none";
+            });
+
+        });
+    });
+
+});
+</script>
+
+</body>
+</html>

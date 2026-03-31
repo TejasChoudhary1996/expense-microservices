@@ -1,0 +1,4 @@
+com\example\analytics\AnalyticsApplication.class
+com\example\analytics\service\AnalyticsService.class
+com\example\analytics\controller\AnalyticsController.class
+com\example\analytics\dto\Expense.class

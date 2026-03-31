@@ -1,0 +1,32 @@
+<%@ include file="../layout/header.jsp" %>
+<%@ include file="../layout/sidebar.jsp" %>
+
+<div class="content">
+
+<h3>All Expenses</h3>
+
+<div class="card-box">
+<table class="table">
+<tr>
+<th>ID</th>
+<th>Amount</th>
+<th>Description</th>
+<th>Date</th>
+</tr>
+
+<c:forEach var="e" items="${expenses}">
+<tr>
+<td>${e.id}</td>
+<td>&#8377; ${e.amount}</td>
+<td>${e.description}</td>
+<td>${e.date}</td>
+</tr>
+</c:forEach>
+
+</table>
+</div>
+
+</div>
+
+</body>
+</html>

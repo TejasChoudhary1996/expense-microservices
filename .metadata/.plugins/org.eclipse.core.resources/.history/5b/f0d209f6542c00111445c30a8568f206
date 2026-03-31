@@ -1,0 +1,31 @@
+package com.example.expenseservice.security;
+
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletRequest;
+import java.io.IOException;
+
+public class JwtFilter{
+
+
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+			throws IOException, ServletException {
+		/*
+		 * 
+		 * HttpServletRequest req = (HttpServletRequest) request;
+		 * 
+		 * String header = req.getHeader("Authorization");
+		 * System.out.println("inside filter "+header); if (header != null &&
+		 * header.startsWith("Bearer ")) { String token = header.substring(7);
+		 * 
+		 * try { Claims claims = JwtUtil.validateToken(token);
+		 * System.out.println("claims "+claims); Long userId = claims.get("userId",
+		 * Long.class); System.out.println("userId from token "+userId); // attach
+		 * userId to request req.setAttribute("userId", userId);
+		 * 
+		 * } catch (Exception e) { throw new RuntimeException("Invalid token"); } } else
+		 * { throw new RuntimeException("Missing or invalid Authorization header"); }
+		 * 
+		 * chain.doFilter(request, response);
+		 */}
+}

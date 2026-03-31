@@ -1,0 +1,9 @@
+<div class="sidebar" id="sidebar">
+
+    <button onclick="toggleSidebar()" class="btn btn-light mb-3">☰</button>
+
+    <a href="/" class="active">📋 <span>Dashboard</span></a>
+    <a href="/expenses">📄 <span>Expenses</span></a>
+    <a href="/analytics">📊 <span>Analytics</span></a>
+
+</div>

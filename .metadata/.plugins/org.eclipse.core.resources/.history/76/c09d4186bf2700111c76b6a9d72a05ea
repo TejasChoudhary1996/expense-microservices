@@ -1,0 +1,22 @@
+
+package com.example.expenseservice.entity;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+
+@Entity
+@Data
+public class Expense {
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
+  @Min(value = 1, message = "Amount must be greater than 0")
+  private Double amount;
+
+  @NotBlank
+  private String description;
+}

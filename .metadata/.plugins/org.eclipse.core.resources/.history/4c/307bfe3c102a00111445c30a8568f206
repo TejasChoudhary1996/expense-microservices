@@ -1,0 +1,23 @@
+<script>
+function toggleSidebar() {
+    document.querySelector(".sidebar").classList.toggle("collapsed");
+    document.querySelector(".content").classList.toggle("expanded");
+}
+</script>
+<div class="sidebar">
+
+    <button onclick="toggleSidebar()" class="btn btn-light mb-3">☰</button>
+
+    <a href="/" class="${page == 'dashboard' ? 'active' : ''}">
+        📋 <span>Dashboard</span>
+    </a>
+
+    <a href="/expenses" class="${page == 'expenses' ? 'active' : ''}">
+        📄 <span>Expenses</span>
+    </a>
+
+    <a href="/analytics" class="${page == 'analytics' ? 'active' : ''}">
+        📊 <span>Analytics</span>
+    </a>
+
+</div>

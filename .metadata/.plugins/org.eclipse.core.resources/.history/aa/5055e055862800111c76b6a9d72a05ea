@@ -1,0 +1,42 @@
+
+package com.example.uiservice.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+
+import com.example.uiservice.entity.Expense;
+
+import java.util.*;
+
+@Controller
+public class UIController {
+
+  private final String URL = "http://localhost:8081/expenses";
+
+  @GetMapping("/")
+  public String home(Model model) {
+    RestTemplate rt = new RestTemplate();
+    System.out.println("inside home");
+    List expenses = rt.getForObject(URL, List.class);
+    System.out.println("after getForObject"+expenses.size()+" "+expenses);
+    
+    model.addAttribute("expenses", expenses);
+    return "home";
+  }
+
+  @PostMapping("/save")
+  public String save(ModelAttribute  Expense expense) {
+    RestTemplate rt = new RestTemplate();
+    
+    System.out.println("inside save "+expense.getAmount()+" "+expense.getDescription()+" "+expense.getDate()+" "+expense.getCategory()+" "+expense.getPaymentMethod());
+    req.put("amount", amount);
+    req.put("description", description);
+    req.put("date", date);
+    req.put("category", category);
+    req.put("paymentMethod", paymentMethod);
+    rt.postForObject(URL, req, String.class);
+    return "redirect:/";
+  }
+}

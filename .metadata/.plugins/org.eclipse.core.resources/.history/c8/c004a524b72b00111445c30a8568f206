@@ -1,0 +1,283 @@
+package com.example.uiservice.controller;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
+
+import com.example.uiservice.entity.Category;
+import com.example.uiservice.entity.Expense;
+import com.example.uiservice.entity.PaymentMethod;
+import com.example.uiservice.service.UIService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpSession;
+
+import java.time.LocalDate;
+import java.util.*;
+
+@Controller
+public class UIController {
+
+	@Value("${auth.service.url}")
+	private String BASE_URL;
+
+	private String EXPENSE_URL;
+	private String AUTH_URL;
+	private String ANALYTICS_URL;
+	
+	private UIService uiService;
+
+	@PostConstruct
+	public void init() {
+	    System.out.println("Auth Service URL: " + BASE_URL);
+	    EXPENSE_URL = BASE_URL;
+		AUTH_URL = BASE_URL + "/auth";
+		ANALYTICS_URL = BASE_URL + "/analytics";
+		
+	}
+	public UIController(UIService uiService) {
+		this.uiService = uiService;
+	}
+
+	// ✅ Helper to attach JWT
+	private HttpEntity<?> getEntityWithToken(HttpSession session) {
+		String token = (String) session.getAttribute("token");
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Authorization", "Bearer " + token);
+
+		return new HttpEntity<>(headers);
+	}
+
+	// ✅ Home / Dashboard
+	@GetMapping("/")
+	public String home(Model model, HttpSession session) {
+
+		String token = (String) session.getAttribute("token");
+		if (token == null) {
+			return "redirect:/login";
+		}
+
+		RestTemplate rt = new RestTemplate();
+		
+
+		try {
+			Long userId = this.uiService.extractUserIdFromToken(token);
+			List expenses = rt
+					.exchange(EXPENSE_URL + "/expenses", HttpMethod.GET, getEntityWithToken(session), List.class)
+					.getBody();
+
+			List categories = rt
+					.exchange(EXPENSE_URL + "/meta/categories", HttpMethod.GET, getEntityWithToken(session), List.class)
+					.getBody();
+
+			List payments = rt
+					.exchange(EXPENSE_URL + "/meta/payments", HttpMethod.GET, getEntityWithToken(session), List.class)
+					.getBody();
+
+
+			
+			  Map response = rt.exchange(AUTH_URL + "/me", HttpMethod.GET,
+			  getEntityWithToken(session), Map.class) .getBody();
+			 
+			
+			 
+			 System.out.println("user details "+response.get("username"));
+			System.out.println("userId from token "+userId);
+			System.out.println("expenses "+expenses);
+			System.out.println("categories "+categories);
+			System.out.println("payments "+payments);
+			model.addAttribute("expenses", expenses);
+			model.addAttribute("categories", categories);
+			model.addAttribute("payments", payments);
+			
+			session.setAttribute("userName", response.get("username"));
+		} catch (HttpClientErrorException.Unauthorized e) {
+			return "redirect:/login";
+		}
+
+		model.addAttribute("page", "dashboard");
+		return "pages/dashboard";
+	}
+
+	// ✅ Save Expense
+	@PostMapping("/save")
+	public String save(@ModelAttribute Expense expense, HttpSession session) {
+
+		if (session.getAttribute("token") == null) {
+			return "redirect:/login";
+		}
+
+		RestTemplate rt = new RestTemplate();
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Authorization", "Bearer " + session.getAttribute("token"));
+
+		HttpEntity<Expense> request = new HttpEntity<>(expense, headers);
+
+		rt.exchange(EXPENSE_URL + "/expenses", HttpMethod.POST, request, String.class);
+		session.setAttribute("message", "Expense added successfully!");
+		return "redirect:/";
+	}
+
+	// ✅ Add Category
+	@PostMapping("/addCategory")
+	public String addCategory(@ModelAttribute Category category, HttpSession session) {
+
+		RestTemplate rt = new RestTemplate();
+
+		HttpEntity<Category> request = new HttpEntity<>(category,
+				(HttpHeaders) getEntityWithToken(session).getHeaders());
+
+		rt.exchange(EXPENSE_URL + "/meta/categories", HttpMethod.POST, request, String.class);
+
+		return "redirect:/";
+	}
+
+	// ✅ Add Payment
+	@PostMapping("/addPaymentMethod")
+	public String addPaymentMethod(@ModelAttribute PaymentMethod paymentMethod, HttpSession session) {
+
+		RestTemplate rt = new RestTemplate();
+
+		HttpEntity<PaymentMethod> request = new HttpEntity<>(paymentMethod,
+				(HttpHeaders) getEntityWithToken(session).getHeaders());
+
+		rt.exchange(EXPENSE_URL + "/meta/payments", HttpMethod.POST, request, String.class);
+
+		return "redirect:/";
+	}
+
+	// ✅ Expenses Page
+	@GetMapping("/expenses")
+	public String expenses(Model model, HttpSession session) {
+
+		if (session.getAttribute("token") == null) {
+			return "redirect:/login";
+		}
+
+		RestTemplate rt = new RestTemplate();
+
+		Expense[] expenseArray = rt
+				.exchange(EXPENSE_URL + "/expenses", HttpMethod.GET, getEntityWithToken(session), Expense[].class)
+				.getBody();
+
+		List<Expense> expenses = Arrays.asList(expenseArray);
+
+		model.addAttribute("expenses", expenses);
+		model.addAttribute("page", "expenses");
+
+		return "pages/expenses";
+	}
+
+	// ✅ Analytics Page
+	@GetMapping("/analytics")
+	public String analytics(Model model, HttpSession session) {
+
+		if (session.getAttribute("token") == null) {
+			return "redirect:/login";
+		}
+
+		RestTemplate rt = new RestTemplate();
+		int month = LocalDate.now().getMonthValue();
+
+		Double total = rt.exchange(ANALYTICS_URL + "/total", HttpMethod.GET, getEntityWithToken(session), Double.class)
+				.getBody();
+
+		Double monthly = rt.exchange(ANALYTICS_URL + "/monthly?month=" + month, HttpMethod.GET,
+				getEntityWithToken(session), Double.class).getBody();
+
+		Map categoryData = rt
+				.exchange(ANALYTICS_URL + "/category", HttpMethod.GET, getEntityWithToken(session), Map.class)
+				.getBody();
+
+		Map paymentData = rt
+				.exchange(ANALYTICS_URL + "/payment", HttpMethod.GET, getEntityWithToken(session), Map.class).getBody();
+
+		model.addAttribute("totalExpenses", total);
+		model.addAttribute("monthlyExpenses", monthly);
+		model.addAttribute("categoryAnalytics", categoryData);
+		model.addAttribute("paymentAnalytics", paymentData);
+
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			model.addAttribute("categoryAnalyticsJson", mapper.writeValueAsString(categoryData));
+			model.addAttribute("paymentAnalyticsJson", mapper.writeValueAsString(paymentData));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		model.addAttribute("page", "analytics");
+		return "pages/analytics";
+	}
+
+	// ✅ Login Page
+	@GetMapping("/login")
+	public String loginPage() {
+		return "pages/login";
+	}
+
+	// ✅ Signup Page
+	@GetMapping("/signup")
+	public String signupPage() {
+		return "pages/signup";
+	}
+
+	// ✅ Login API
+	@PostMapping("/login")
+	public String login(@RequestParam String username, @RequestParam String password, HttpSession session) {
+
+		RestTemplate rt = new RestTemplate();
+
+		Map<String, String> req = new HashMap<>();
+		req.put("username", username);
+		req.put("password", password);
+
+		try {
+			String token = rt.postForObject(AUTH_URL + "/login", req, String.class);
+			System.out.println("Received token: " + token);
+			session.setAttribute("token", token);
+
+			return "redirect:/";
+
+		} catch (Exception e) {
+			session.setAttribute("loginPageMsg", "Invalid credentials. Please try again.");
+			return "pages/login";
+		}
+	}
+
+	// ✅ Signup API
+	@PostMapping("/signup")
+	public String signup(@RequestParam String username, @RequestParam String password,HttpSession session) {
+
+		RestTemplate rt = new RestTemplate();
+
+		Map<String, String> req = new HashMap<>();
+		req.put("username", username);
+		req.put("password", password);
+
+		try {
+			System.out.println("Attempting signup with username: " + B);
+			System.out.println("Signup URL: " + AUTH_URL + "/signup");
+			rt.postForObject(AUTH_URL + "/signup", req, String.class);
+			session.setAttribute("loginPageMsg", "Signup successful! Please login.");
+			return "redirect:/login";
+		} catch (Exception e) {
+			System.out.println("Signup error: " + e.getMessage());
+			session.setAttribute("loginPageMsg", "Signup failed. Try again.");
+			return "pages/signup";
+		}
+	}
+
+	// ✅ Logout
+	@GetMapping("/logout")
+	public String logout(HttpSession session) {
+		session.invalidate();
+		return "redirect:/login?loginPageMsg=logout";		
+	}
+}

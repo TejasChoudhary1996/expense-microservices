@@ -1,0 +1,198 @@
+
+package com.example.uiservice.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+
+import com.example.uiservice.entity.Category;
+import com.example.uiservice.entity.Expense;
+import com.example.uiservice.entity.PaymentMethod;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.servlet.http.HttpSession;
+
+import java.time.LocalDate;
+import java.util.*;
+
+@Controller
+public class UIController {
+
+  private final String URL = "http://localhost:8081/expenses";
+
+  @GetMapping("/")
+	public String home(Model model) {
+
+		RestTemplate rt = new RestTemplate();
+		// existing
+	try {
+		List expenses = rt.getForObject("http://localhost:8081/expenses", List.class);
+		List categories = rt.getForObject("http://localhost:8081/meta/categories", List.class);
+		List payments = rt.getForObject("http://localhost:8081/meta/payments", List.class);
+		
+
+		model.addAttribute("expenses", expenses);
+		model.addAttribute("categories", categories);
+		model.addAttribute("payments", payments);
+	}
+	catch (Exception e) {
+		String errorMsg=e.getMessage();
+		if(errorMsg.contains("Missing or invalid Authorization header"))
+		{
+			redirect:/login
+		}
+	}
+		
+		model.addAttribute("page", "dashboard");
+	    return "pages/dashboard";
+	}
+
+  @PostMapping("/save")
+  public String save(@ModelAttribute Expense expense) {
+    RestTemplate rt = new RestTemplate();
+    
+    System.out.println("inside save "+expense.getAmount()+" "+expense.getDescription()+" "+expense.getExpenseDate()+" "+expense.getCategory()+" "+expense.getPaymentMethod());
+    expense.setUserId(1L); // hardcoded user id for demo
+    
+    rt.postForObject(URL, expense, String.class);
+    return "redirect:/";
+  }
+  
+  @PostMapping("/addCategory")
+  public String addCategory(@ModelAttribute Category category) {
+
+      RestTemplate rt = new RestTemplate();
+
+      rt.postForObject("http://localhost:8081/meta/categories", category, String.class);
+
+      return "redirect:/";
+  }
+  @PostMapping("/addPaymentMethod")
+  public String addPaymentMethod(@ModelAttribute PaymentMethod paymentMethod) {
+
+      RestTemplate rt = new RestTemplate();
+
+      rt.postForObject("http://localhost:8081/meta/payments", paymentMethod, String.class);
+
+      return "redirect:/";
+  }
+  
+  @GetMapping("/expenses")
+  public String expenses(Model model,
+                         @RequestParam(required = false) String sort,
+                         @RequestParam(required = false) String order,
+                         @RequestParam(required = false) String fromDate,
+                         @RequestParam(required = false) String toDate) {
+
+      RestTemplate rt = new RestTemplate();
+
+      Expense[] expenseArray =
+    		    rt.getForObject("http://localhost:8081/expenses", Expense[].class);
+
+    		List<Expense> expenses = Arrays.asList(expenseArray);
+
+    		model.addAttribute("expenses", expenses);
+    		model.addAttribute("page", "expenses");
+    		
+      return "pages/expenses";
+  }
+  @GetMapping("/analytics")
+  public String analytics(Model model) {
+		RestTemplate rt = new RestTemplate();
+		int currentMonth = LocalDate.now().getMonthValue();
+		// analytics
+		Double total = rt.getForObject("http://localhost:8083/analytics/total", Double.class);
+		Double monthly = rt.getForObject("http://localhost:8083/analytics/monthly?month="+currentMonth, Double.class);
+		Map categoryData = rt.getForObject("http://localhost:8083/analytics/category", Map.class);
+		Map paymentData = rt.getForObject("http://localhost:8083/analytics/payment", Map.class);
+
+		model.addAttribute("totalExpenses", total);
+		model.addAttribute("monthlyExpenses", monthly);
+		model.addAttribute("categoryAnalytics", categoryData);
+		model.addAttribute("paymentAnalytics", paymentData);
+		ObjectMapper mapper = new ObjectMapper();
+
+		try {
+			model.addAttribute("categoryAnalyticsJson", mapper.writeValueAsString(categoryData));
+			model.addAttribute("paymentAnalyticsJson", mapper.writeValueAsString(paymentData));
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("categoryData: "+categoryData);
+		System.out.println("paymentData: "+paymentData);
+      model.addAttribute("page", "analytics");
+      return "pages/analytics";
+  }
+  
+  
+  @GetMapping("/login")
+  public String loginPage() {
+      return "pages/login";
+  }
+
+  @GetMapping("/signup")
+  public String signupPage() {
+      return "pages/signup";
+  }
+
+  @PostMapping("/login")
+  public String login(@RequestParam String username,
+                      @RequestParam String password,
+                      HttpSession session) {
+
+      RestTemplate rt = new RestTemplate();
+      System.out.println("Attempting login with username: " + username);
+      Map<String, String> req = new HashMap<>();
+      req.put("username", username);
+      req.put("password", password);
+
+      try {
+          String token = rt.postForObject(
+                  "http://localhost:8082/auth/login",
+                  req,
+                  String.class
+          );
+          
+          session.setAttribute("token", token);
+
+          return "pages/dashboard";
+
+      } catch (Exception e) {
+    	  System.out.println("Login failed for username: " + username);
+          return "pages/login"; // failed login
+      }
+  }
+
+  @PostMapping("/signup")
+  public String signup(@RequestParam String username,
+                       @RequestParam String password) {
+
+	  RestTemplate rt = new RestTemplate();
+	  try {
+      Map<String, String> req = new HashMap<>();
+      req.put("username", username);
+      req.put("password", password);
+
+      rt.postForObject(
+              "http://localhost:8082/auth/signup",
+              req,
+              String.class
+      );
+
+      return "redirect:/login";
+	  }
+	  catch (Exception e) {
+    	  System.out.println("signup failed for username: " + username);
+          return "pages/signup"; // failed login
+      }
+  }
+
+  @GetMapping("/logout")
+  public String logout(HttpSession session) {
+      session.invalidate();
+      return "redirect:/login";
+  }
+}

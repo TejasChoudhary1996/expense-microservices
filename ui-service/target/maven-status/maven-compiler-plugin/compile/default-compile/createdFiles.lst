@@ -1,0 +1,7 @@
+com\example\uiservice\entity\Expense.class
+com\example\uiservice\entity\PaymentMethod.class
+com\example\uiservice\entity\User.class
+com\example\uiservice\UiApplication.class
+com\example\uiservice\controller\UIController.class
+com\example\uiservice\entity\Category.class
+com\example\uiservice\service\UIService.class

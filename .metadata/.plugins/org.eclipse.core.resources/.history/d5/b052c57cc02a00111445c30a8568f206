@@ -1,0 +1,59 @@
+
+package com.example.analytics.service;
+
+import com.example.analytics.dto.Expense;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Service
+public class AnalyticsService {
+
+    private final String URL = "http://localhost:8081/expenses";
+
+    public List<Expense> getAllExpenses() {
+        RestTemplate rt = new RestTemplate();
+        return Arrays.asList(rt.getForObject(URL, Expense[].class));
+    }
+
+    public Double getTotal() {
+        return getAllExpenses().stream()
+        		.filter(e -> e.getAmount() != null)
+                .mapToDouble(Expense::getAmount)
+                .sum();
+    }
+
+    public Double getMonthly(int month) {
+        return getAllExpenses().stream()
+                .filter(e -> e.getExpenseDate().getMonthValue() == month)
+                .mapToDouble(Expense::getAmount)
+                .sum();
+    }
+
+    public Map<String, Double> categoryWise() {
+        return getAllExpenses().stream()
+                .collect(Collectors.groupingBy(
+                        Expense::getCategory,
+                        Collectors.summingDouble(Expense::getAmount)
+                ));
+    }
+
+    public Map<String, Double> paymentWise() {
+        return getAllExpenses().stream()
+                .collect(Collectors.groupingBy(
+                        Expense::getPaymentMethod,
+                        Collectors.summingDouble(Expense::getAmount)
+                ));
+    }
+
+    public Map<String, Double> monthlyCategory(int month) {
+        return getAllExpenses().stream()
+                .filter(e -> e.getExpenseDate().getMonthValue() == month)
+                .collect(Collectors.groupingBy(
+                        Expense::getCategory,
+                        Collectors.summingDouble(Expense::getAmount)
+                ));
+    }
+}

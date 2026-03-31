@@ -1,0 +1,9 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<div style="margin-left:220px; padding:10px; background:white; display:flex; justify-content:space-between;">
+
+    <h5>Expense Tracker</h5>
+
+    <button onclick="toggleTheme()" class="btn btn-dark">🌙</button>
+
+</div>

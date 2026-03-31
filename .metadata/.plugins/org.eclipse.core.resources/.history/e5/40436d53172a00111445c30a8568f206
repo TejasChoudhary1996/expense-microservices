@@ -1,0 +1,100 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="../layout/header.jsp" %>
+<%@ include file="../layout/sidebar.jsp" %>
+
+<div class="content">
+
+<h3>All Expenses</h3>
+
+<div class="card-box">
+<table class="table" id="expenseTable">
+
+<thead>
+<tr>
+<th>Amount</th>
+<th>Description</th>
+<th>Date</th>
+<th>Category</th>
+<th>Payment Method</th>
+</tr>
+
+<!-- FILTER ROW -->
+<tr>
+<th><input type="text" class="form-control filter" placeholder="Amount"></th>
+<th><input type="text" class="form-control filter" placeholder="Description"></th>
+<th><input type="text" class="form-control filter" placeholder="Date"></th>
+<th><input type="text" class="form-control filter" placeholder="Category"></th>
+<th><input type="text" class="form-control filter" placeholder="Payment"></th>
+</tr>
+</thead>
+
+<tbody>
+<c:forEach var="e" items="${expenses}">
+<tr>
+<td>${e.amount}</td> <!-- removed ₹ for better filtering -->
+<td>${e.description}</td>
+<td>${e.date}</td>
+<td>${e.category}</td>
+<td>${e.paymentMethod}</td>
+</tr>
+</c:forEach>
+</tbody>
+<tfoot>
+<tr>
+    <th colspan="1">Total</th>
+    <th id="totalAmount">0</th>
+    <th colspan="4"></th>
+</tr>
+</tfoot>
+
+</table>
+</div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const filters = document.querySelectorAll(".filter");
+    const rows = document.querySelectorAll("#expenseTable tbody tr");
+    const totalElement = document.getElementById("totalAmount");
+
+    function updateTable() {
+        let total = 0;
+
+        rows.forEach(row => {
+            let show = true;
+
+            filters.forEach((f, i) => {
+                let val = f.value.toLowerCase();
+                let cellText = row.cells[i].innerText.toLowerCase();
+
+                if (val && !cellText.includes(val)) {
+                    show = false;
+                }
+            });
+
+            row.style.display = show ? "" : "none";
+
+            // ✅ Calculate total only for visible rows
+            if (show) {
+                let amount = parseFloat(row.cells[1].innerText) || 0;
+                total += amount;
+            }
+        });
+
+        totalElement.innerText = total.toFixed(2);
+    }
+
+    // Attach event
+    filters.forEach(input => {
+        input.addEventListener("keyup", updateTable);
+    });
+
+    // Initial total
+    updateTable();
+
+});
+</script>
+</body>
+</html>

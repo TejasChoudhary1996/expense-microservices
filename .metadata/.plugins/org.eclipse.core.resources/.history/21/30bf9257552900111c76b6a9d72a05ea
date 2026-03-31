@@ -1,0 +1,30 @@
+<%@ include file="../layout/sidebar.jsp" %>
+<%@ include file="../layout/header.jsp" %>
+
+<div class="content">
+
+<h3>Add Expense</h3>
+
+<form action="save" method="post" class="row g-3">
+
+<input name="amount" class="form-control" required>
+<input name="description" class="form-control" required>
+<input type="date" name="date" value="<%= java.time.LocalDate.now() %>" required>
+
+<select name="category" class="form-select" required>
+<c:forEach var="c" items="${categories}">
+<option>${c.name}</option>
+</c:forEach>
+</select>
+
+<select name="paymentMethod" class="form-select" required>
+<c:forEach var="p" items="${payments}">
+<option>${p.name}</option>
+</c:forEach>
+</select>
+
+<button class="btn btn-primary">Save</button>
+
+</form>
+
+</div>

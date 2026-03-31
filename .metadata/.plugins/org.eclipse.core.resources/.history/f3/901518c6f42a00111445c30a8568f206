@@ -1,0 +1,54 @@
+
+package com.example.analytics.controller;
+
+import com.example.analytics.service.AnalyticsService;
+
+import jakarta.servlet.http.HttpServletRequest;
+
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+
+@RestController
+@RequestMapping("/analytics")
+public class AnalyticsController {
+
+    private final AnalyticsService service;
+
+    public AnalyticsController(AnalyticsService service) {
+        this.service = service;
+    }
+
+
+    @GetMapping("/total")
+    public Double total(HttpServletRequest request) {
+
+        String token = request.getHeader("Authorization").substring(7);
+
+        return service.getTotal(token);
+    }
+
+    @GetMapping("/monthly")
+    public Double monthly(@RequestParam int month, HttpServletRequest request) {
+        String token = request.getHeader("Authorization").substring(7);
+        return service.getMonthly(month,token);
+    }
+
+    @GetMapping("/category")
+    public Map<String, Double> categoryWise() {
+        String token = request.getHeader("Authorization").substring(7);
+        return service.categoryWise(token);
+    }
+
+    @GetMapping("/payment")
+    public Map<String, Double> paymentWise() {
+        String token = request.getHeader("Authorization").substring(7);
+        return service.paymentWise(token);
+    }
+
+    @GetMapping("/monthly-category")
+    public Map<String, Double> monthlyCategory(@RequestParam int month) {
+        String token = request.getHeader("Authorization").substring(7);
+        return service.monthlyCategory(month,token);
+    }
+}

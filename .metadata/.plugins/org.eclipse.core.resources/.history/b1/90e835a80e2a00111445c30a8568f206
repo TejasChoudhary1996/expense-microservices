@@ -1,0 +1,142 @@
+
+package com.example.uiservice.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+
+import com.example.uiservice.entity.Category;
+import com.example.uiservice.entity.Expense;
+import com.example.uiservice.entity.PaymentMethod;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.time.LocalDate;
+import java.util.*;
+
+@Controller
+public class UIController {
+
+  private final String URL = "http://localhost:8081/expenses";
+
+  @GetMapping("/")
+	public String home(Model model) {
+
+		RestTemplate rt = new RestTemplate();
+		int currentMonth = LocalDate.now().getMonthValue();
+		// existing
+		List expenses = rt.getForObject("http://localhost:8081/expenses", List.class);
+		List categories = rt.getForObject("http://localhost:8081/meta/categories", List.class);
+		List payments = rt.getForObject("http://localhost:8081/meta/payments", List.class);
+
+		// analytics
+		Double total = rt.getForObject("http://localhost:8083/analytics/total", Double.class);
+		Double monthly = rt.getForObject("http://localhost:8083/analytics/monthly?month="+currentMonth, Double.class);
+		Map categoryData = rt.getForObject("http://localhost:8083/analytics/category", Map.class);
+		Map paymentData = rt.getForObject("http://localhost:8083/analytics/payment", Map.class);
+
+		model.addAttribute("expenses", expenses);
+		model.addAttribute("categories", categories);
+		model.addAttribute("payments", payments);
+
+		model.addAttribute("totalAnalytics", total);
+		model.addAttribute("monthlyAnalytics", monthly);
+		model.addAttribute("categoryAnalytics", categoryData);
+		model.addAttribute("paymentAnalytics", paymentData);
+		ObjectMapper mapper = new ObjectMapper();
+		
+		try {
+			model.addAttribute("categoryAnalyticsJson", mapper.writeValueAsString(categoryData));
+			model.addAttribute("paymentAnalyticsJson", mapper.writeValueAsString(paymentData));
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("categoryData "+categoryData);
+		System.out.println("paymentData "+paymentData);
+		System.out.println("total "+total);
+		System.out.println("monthly "+monthly);
+		System.out.println("expenses "+expenses);
+		System.out.println("categories "+categories);
+		System.out.println("payments "+payments);
+		System.out.println("analytics "+total+" "+monthly+" "+categoryData+" "+paymentData);
+		
+		model.addAttribute("page", "dashboard");
+	    return "pages/dashboard";
+	}
+
+  @PostMapping("/save")
+  public String save(@ModelAttribute Expense expense) {
+    RestTemplate rt = new RestTemplate();
+    
+    System.out.println("inside save "+expense.getAmount()+" "+expense.getDescription()+" "+expense.getDate()+" "+expense.getCategory()+" "+expense.getPaymentMethod());
+    
+    rt.postForObject(URL, expense, String.class);
+    return "redirect:/";
+  }
+  
+  @PostMapping("/addCategory")
+  public String addCategory(@ModelAttribute Category category) {
+
+      RestTemplate rt = new RestTemplate();
+
+      rt.postForObject("http://localhost:8081/meta/categories", category, String.class);
+
+      return "redirect:/";
+  }
+  @PostMapping("/addPaymentMethod")
+  public String addPaymentMethod(@ModelAttribute PaymentMethod paymentMethod) {
+
+      RestTemplate rt = new RestTemplate();
+
+      rt.postForObject("http://localhost:8081/meta/payments", paymentMethod, String.class);
+
+      return "redirect:/";
+  }
+  
+  @GetMapping("/expenses")
+  public String expenses(Model model,
+                         @RequestParam(required = false) String sort,
+                         @RequestParam(required = false) String order,
+                         @RequestParam(required = false) String fromDate,
+                         @RequestParam(required = false) String toDate) {
+
+      RestTemplate rt = new RestTemplate();
+
+      Expense[] expenseArray =
+    		    rt.getForObject("http://localhost:8081/expenses", Expense[].class);
+
+    		List<Expense> expenses = Arrays.asList(expenseArray);
+
+    		model.addAttribute("expenses", expenses);
+      return "pages/expenses";
+  }
+  @GetMapping("/analytics")
+  public String analytics(Model model) {
+		RestTemplate rt = new RestTemplate();
+		int currentMonth = LocalDate.now().getMonthValue();
+		// analytics
+		Double total = rt.getForObject("http://localhost:8083/analytics/total", Double.class);
+		Double monthly = rt.getForObject("http://localhost:8083/analytics/monthly?month="+currentMonth, Double.class);
+		Map categoryData = rt.getForObject("http://localhost:8083/analytics/category", Map.class);
+		Map paymentData = rt.getForObject("http://localhost:8083/analytics/payment", Map.class);
+
+		model.addAttribute("totalAnalytics", total);
+		model.addAttribute("monthlyAnalytics", monthly);
+		model.addAttribute("categoryAnalytics", categoryData);
+		model.addAttribute("paymentAnalytics", paymentData);
+		ObjectMapper mapper = new ObjectMapper();
+
+		try {
+			model.addAttribute("categoryAnalyticsJson", mapper.writeValueAsString(categoryData));
+			model.addAttribute("paymentAnalyticsJson", mapper.writeValueAsString(paymentData));
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+      model.addAttribute("page", "analytics");
+      return "pages/analytics";
+  }
+  
+}

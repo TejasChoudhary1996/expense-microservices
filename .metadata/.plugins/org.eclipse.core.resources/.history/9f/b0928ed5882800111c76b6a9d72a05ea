@@ -1,0 +1,32 @@
+package com.example.expenseservice.controller;
+
+@RestController
+@RequestMapping("/meta")
+public class MetaController {
+
+    @Autowired
+    private CategoryRepository categoryRepo;
+
+    @Autowired
+    private PaymentMethodRepository paymentRepo;
+
+    @GetMapping("/categories")
+    public List<Category> getCategories() {
+        return categoryRepo.findAll();
+    }
+
+    @PostMapping("/categories")
+    public Category addCategory(@RequestBody Category c) {
+        return categoryRepo.save(c);
+    }
+
+    @GetMapping("/payments")
+    public List<PaymentMethod> getPayments() {
+        return paymentRepo.findAll();
+    }
+
+    @PostMapping("/payments")
+    public PaymentMethod addPayment(@RequestBody PaymentMethod p) {
+        return paymentRepo.save(p);
+    }
+}
