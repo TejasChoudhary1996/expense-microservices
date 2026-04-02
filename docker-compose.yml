@@ -23,6 +23,7 @@ services:
       - "8082:8082"
     depends_on:
       - discovery-server
+      - mysql
 
   expense-service:
     build: ./expense-service
@@ -31,6 +32,7 @@ services:
       - "8081:8081"
     depends_on:
       - discovery-server
+      - mysql
 
   analytics-service:
     build: ./analytics-service
@@ -48,3 +50,17 @@ services:
       - "8080:8080"
     depends_on:
       - api-gateway
+
+  mysql:
+    image: mysql:8
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: expense_db
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:
