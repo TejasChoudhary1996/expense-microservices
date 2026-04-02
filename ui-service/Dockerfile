@@ -4,6 +4,8 @@ WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests
 
+RUN ls -R /app
+
 # Step 2: Run in Tomcat
 FROM tomcat:10-jdk17
 RUN rm -rf /usr/local/tomcat/webapps/*

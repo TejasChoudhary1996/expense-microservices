@@ -4,8 +4,10 @@ WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests
 
+RUN ls -R /app
+
 # Step 2: Run
 FROM eclipse-temurin:17-jdk
 WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /app/api-gateway/target/*.jar app.jar
 ENTRYPOINT ["java","-jar","/app/app.jar"]
