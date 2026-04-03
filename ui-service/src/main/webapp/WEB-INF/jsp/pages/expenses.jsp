@@ -1,12 +1,20 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="../layout/header.jsp" %>
 <%@ include file="../layout/sidebar.jsp" %>
+<style>
+@media (max-width: 768px) {
+    .content {
+        margin-left: 0;
+    }
+}
+</style>
 
+<body>
 <div class="content">
 
 <h3>All Expenses</h3>
 
-<div class="card-box">
+<div class="card-box table-responsive">
 <table class="table" id="expenseTable">
 
 <thead>

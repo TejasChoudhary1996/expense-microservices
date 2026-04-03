@@ -32,6 +32,11 @@ body {
 canvas {
     max-height: 300px !important;
 }
+@media (max-width: 768px) {
+    .content {
+        margin-left: 0;
+    }
+}
 </style>
 
 </head>
