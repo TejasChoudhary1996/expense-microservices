@@ -3,8 +3,33 @@
 
 <html>
 <head>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <title>Login</title>
     <style>
+.password-wrapper {
+    position: relative;
+}
+
+.password-wrapper input {
+    padding-right: 40px; /* space for icon */
+}
+
+.toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.toggle-password i {
+    font-size: 16px;
+}
         body {
             font-family: Arial;
             background: #0f172a;
@@ -56,6 +81,21 @@
     color: #166534;
 }
     </style>
+    <script>
+    function togglePassword(inputId, el) {
+        const input = document.getElementById(inputId);
+        const icon = el.querySelector("i"); 
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove("bi-eye");
+            icon.classList.add("bi-eye-slash");
+        } else {
+            input.type = "password";
+            icon.classList.remove("bi-eye-slash");
+            icon.classList.add("bi-eye");
+        }
+    }
+</script>
 </head>
 <body>
 
@@ -85,7 +125,21 @@
 
 <form action="/login" method="post">
     <input name="username" placeholder="Username" required/>
-    <input name="password" type="password" placeholder="Password" required/>
+
+<div class="password-wrapper mb-3">
+
+    <input type="password"
+           class="form-control"
+           id="loginPassword"
+           name="password"
+           placeholder="Password">
+
+    <span class="toggle-password"
+          onclick="togglePassword('loginPassword', this)">
+        <i class="bi bi-eye"></i>
+    </span>
+
+</div>
     <button type="submit">Login</button>
 </form>
 

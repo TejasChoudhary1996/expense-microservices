@@ -2,19 +2,9 @@
 
 <div class="sidebar" id="sidebar">
 
- 
-
-	<div style="display:flex; align-items:center; gap:10px; padding:0px;">
-
-    <!-- Toggle -->
-      <button onclick="toggleSidebar()" class="btn btn-light mb-3" >☰</button>
-
-    <!-- Username -->
-    <span style="font-size:24px; font-weight:600; color:white;">
-        ${userName}
-    </span>
-
-</div>
+ <div class="d-flex justify-content-end d-md-none">
+        <button class="btn btn-light btn-sm" onclick="closeSidebar()">✕</button>
+    </div>
 
   <a href="/" class="menu-item ${page == 'dashboard' ? 'active' : ''}">
         📋 <span>Dashboard</span>
