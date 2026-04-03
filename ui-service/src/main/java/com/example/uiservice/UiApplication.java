@@ -1,12 +1,19 @@
-
 package com.example.uiservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
 @SpringBootApplication
-public class UiApplication {
-  public static void main(String[] args) {
-    SpringApplication.run(UiApplication.class, args);
-  }
+public class UiApplication extends SpringBootServletInitializer {
+
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(UiApplication.class);
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(UiApplication.class, args);
+    }
 }
