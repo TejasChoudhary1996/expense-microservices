@@ -68,7 +68,7 @@ services:
     container_name: mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_ROOT_PASSWORD: Exp@App26#X
       MYSQL_DATABASE: expense_db
     volumes:
       - mysql-data:/var/lib/mysql
